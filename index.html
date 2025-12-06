@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - NazRafiq Enterprise</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+/* ===========================
+   Animated Gradient Background
+=========================== */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4f73ff, #90b4ff, #ff6f91, #fcd34d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    transition: 0.5s;
+}
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+body.dark {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364, #1c1c1c);
+    background-size: 400% 400%;
+}
+
+/* ===========================
+   Glassmorphic Login Box
+=========================== */
+.glass-box {
+    width: 360px;
+    max-width: 90%;
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    transition: 0.5s;
+    transform: translateY(-30px);
+    opacity: 0;
+    animation: fadeIn 0.8s forwards 0.3s;
+}
+body.dark .glass-box { 
+    background: rgba(0,0,0,0.4); 
+    border: 1px solid rgba(255,255,255,0.05); 
+}
+
+@keyframes fadeIn { to { transform: translateY(0); opacity: 1; } }
+
+.glass-box h3 { text-align: center; margin-bottom: 20px; font-weight: bold; }
+
+.form-control {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    transition: 0.3s;
+}
+.form-control:focus {
+    background: rgba(255,255,255,0.3);
+    box-shadow: 0 0 10px rgba(255,255,255,0.4);
+    color: white;
+}
+
+.input-group-text {
+    background: rgba(255,255,255,0.25);
+    border: none;
+    color: white;
+}
+
+.btn-login {
+    width: 100%;
+    border-radius: 30px;
+    padding: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-login:hover {
+    background: #ffffffcc;
+    color: #4f73ff;
+    transform: translateY(-2px);
+}
+
+#darkToggle {
+    position: absolute;
+    top: 20px; right: 20px;
+    color: white;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    padding: 10px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+#darkToggle:hover { background: rgba(255,255,255,0.3); }
+
+#error-message {
+    display: none;
+    margin-bottom: 15px;
+}
+#error-message.show { display: block; }
+
+/* Company Logo */
+.company-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.company-logo i {
+    font-size: 2.5rem;
+}
+.company-logo h5 {
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .glass-box {
+        padding: 30px 20px;
+    }
+    #darkToggle {
+        top: 15px;
+        right: 15px;
+        padding: 8px 12px;
+    }
+}
+
+
+
+body {
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    /* Background image */
+    background-image: url('nazcik.png');
+    background-size: cover;       /* stretch to cover whole page */
+    background-position: center;  /* center the image */
+    background-repeat: no-repeat; /* no tiling */
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4); /* adjust opacity as needed */
+    z-index: -1;
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- Dark Mode Toggle -->
+<button id="darkToggle"><i class="bi bi-moon-stars"></i></button>
+
+<!-- Glass Login Box -->
+<div class="glass-box">
+
+    <!-- Company Logo -->
+    <div class="company-logo">
+        <i class="bi bi-building-fill"></i>
+        <h5>NazRafiq Enterprise</h5>
+    </div>
+
+    <h3><i class="bi bi-person-circle me-1"></i>Login</h3>
+
+    <div id="error-message" class="alert alert-danger">Invalid username or password</div>
+
+    <form onsubmit="login(event)">
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input id="username" class="form-control" type="text" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+                <input id="password" class="form-control" type="password" required>
+            </div>
+        </div>
+
+        <button class="btn btn-light btn-login" type="submit">Login</button>
+
+    </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Dark Mode Toggle
+document.getElementById("darkToggle").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+});
+
+// Error message toggle
+function showError() {
+    const err = document.getElementById("error-message");
+    err.classList.add("show");
+    setTimeout(() => err.classList.remove("show"), 3000);
+}
+
+// LOGIN FUNCTION
+function login(event) {
+    event.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (username === "admin" && password === "12345") {
+        window.location.href = "dashboard.html";
+    } else {
+        showError();
+    }
+}
+</script>
+</body>
+</html>

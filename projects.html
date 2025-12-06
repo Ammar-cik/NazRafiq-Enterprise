@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - NazRafiq Enterprise</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .status-card {
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .kanban-column {
+            background: #f7f7f7;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        .project-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .project-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+    </style>
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <!-- Company Name with Icon -->
+    <a class="navbar-brand fw-bold fs-3 d-flex align-items-center mx-auto" href="#">
+      <i class="bi bi-building me-2" style="font-size: 1.5rem;"></i>
+      NazRafiq Enterprise
+    </a>
+
+    <!-- Navbar Toggler for Mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links + Logout -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="employees.html">Employees</a></li>
+        <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
+        <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+      </ul>
+
+      <!-- Logout button (outside <ul>) -->
+      <form class="d-flex ms-3">
+        <button type="button" class="btn btn-outline-light" onclick="logout()">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Main Container -->
+<div class="container mt-5">
+
+    <h2 class="mb-4"><i class="bi bi-kanban me-2"></i>Projects Overview</h2>
+
+    <!-- Status Cards Row -->
+    <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="status-card bg-warning" onclick="scrollToColumn('Pending')">
+            <h4>Pending</h4>
+            <h2 id="pendingCount">0</h2>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="status-card bg-primary" onclick="scrollToColumn('Ongoing')">
+            <h4>Ongoing</h4>
+            <h2 id="ongoingCount">0</h2>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="status-card bg-success" onclick="scrollToColumn('Completed')">
+            <h4>Completed</h4>
+            <h2 id="completedCount">0</h2>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    <!-- Chart -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h5 class="mb-3"><i class="bi bi-pie-chart me-2"></i>Project Status Chart</h5>
+        <canvas id="projectChart" height="120"></canvas>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="row g-4 mt-3">
+    <div class="col-12 col-md-4">
+        <h5 class="fw-bold">Pending</h5>
+        <div class="kanban-column" id="Pending"></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <h5 class="fw-bold">Ongoing</h5>
+        <div class="kanban-column" id="Ongoing"></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <h5 class="fw-bold">Completed</h5>
+        <div class="kanban-column" id="Completed"></div>
+    </div>
+</div>
+
+
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="modalTitle" class="modal-title"></h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Your script.js -->
+<script src="script.js"></script>
+
+<script>
+// =========================
+// COUNT STATUS
+// =========================
+let pending = projects.filter(p => p.status === "Pending").length;
+let ongoing = projects.filter(p => p.status === "Ongoing").length;
+let completed = projects.filter(p => p.status === "Completed").length;
+
+document.getElementById("pendingCount").innerText = pending;
+document.getElementById("ongoingCount").innerText = ongoing;
+document.getElementById("completedCount").innerText = completed;
+
+// =========================
+// RENDER KANBAN CARDS
+// =========================
+projects.forEach(p => {
+    const col = document.getElementById(p.status);
+    col.innerHTML += `
+        <div class="project-card" 
+            style="border-left-color: ${
+                p.status === 'Pending' ? '#ffc107' :
+                p.status === 'Ongoing' ? '#0d6efd' : '#198754'
+            }"
+            onclick="openProject('${p.name}', '${p.deadline}', '${p.status}')">
+
+            <h5 class="fw-bold">${p.name}</h5>
+            <p class="mb-1"><i class="bi bi-calendar-event"></i> ${p.deadline}</p>
+            <span class="badge ${
+                p.status === 'Pending' ? 'bg-warning text-dark' :
+                p.status === 'Ongoing' ? 'bg-primary' : 'bg-success'
+            }">${p.status}</span>
+        </div>
+    `;
+});
+
+// =========================
+// MODAL
+// =========================
+function openProject(name, deadline, status) {
+    document.getElementById("modalTitle").innerText = name;
+    document.getElementById("modalBody").innerHTML = `
+        <p><strong>Deadline:</strong> ${deadline}</p>
+        <p><strong>Status:</strong> ${status}</p>
+        <p>This project is part of the Company's Management System.</p>
+    `;
+    new bootstrap.Modal(document.getElementById("projectModal")).show();
+}
+
+// =========================
+// SCROLL TO CATEGORY
+// =========================
+function scrollToColumn(status) {
+    document.getElementById(status).scrollIntoView({ behavior: "smooth" });
+}
+
+// =========================
+// CHART
+// =========================
+const ctx = document.getElementById('projectChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending', 'Ongoing', 'Completed'],
+        datasets: [{
+            data: [pending, ongoing, completed],
+            backgroundColor: ['#ffc107', '#0d6efd', '#198754']
+        }]
+    }
+});
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Your script.js -->
+<script src="script.js"></script>
+</body>
+</html>
+
+
+</body>
+</html>
